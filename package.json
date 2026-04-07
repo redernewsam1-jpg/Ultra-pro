@@ -1,0 +1,12 @@
+{
+  "name": "ultra-pro-system",
+  "version": "1.0.0",
+  "main": "start.js",
+  "scripts": {
+    "start": "node start.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-telegram-bot-api": "^0.61.0"
+  }
+}
