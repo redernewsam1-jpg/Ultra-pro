@@ -1,38 +1,37 @@
-const express = require("express");
-const { exec } = require("child_process");
-const fs = require("fs");
+// 🔴 ਇੱਥੇ Saini_bots ਦੀ ਜਗ੍ਹਾ ਤੁਹਾਡੇ ਬੋਟ ਦਾ ਨਾਮ ਆਵੇਗਾ
+app.get("/Renderautoapi_bot", (req, res) => {
+  let { url, user_id } = req.query;
 
-const app = express();
+  if (!url || !user_id) {
+    return res.send("Error ❌ URL ਜਾਂ user_id ਮਿਸਿੰਗ ਹੈ!");
+  }
 
-// Security token
-const API_KEY = process.env.API_KEY || "12345";
+  // 🚀 Short Trick: ਲਿੰਕ ਦੇ ਪਿੱਛੋਂ '@Renderautoapi_bot' ਨੂੰ ਕੱਟਣ ਲਈ
+  const cleanUrl = url.split('@')[0];
 
-app.get("/", (req, res) => {
-  res.send("ULTRA PRO API 🚀");
-});
-
-// Secure download
-app.get("/download", (req, res) => {
-  const { url, key } = req.query;
-
-  if (key !== API_KEY) return res.send("Unauthorized ❌");
-  if (!url) return res.send("No URL");
+  res.send("✅ Request Received! ਵੀਡੀਓ ਤੁਹਾਡੇ @Renderautoapi_bot ਟੈਲੀਗ੍ਰਾਮ 'ਤੇ ਆ ਰਹੀ ਹੈ... ⏳");
 
   const file = `video_${Date.now()}.mp4`;
 
-  // Headers support (important for protected streams)
-  const cmd = `yt-dlp -f best -o "${file}" \
-  --add-header "Referer: https://example.com" \
-  "${url}"`;
+  // Ultimate Bypass Code
+  const cmd = `yt-dlp -f best -o "${file}" \\
+  --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \\
+  --add-header "Origin: https://web.classplusapp.com" \\
+  --add-header "Referer: https://web.classplusapp.com/" \\
+  "${cleanUrl}"`;
 
-  exec(cmd, (err) => {
-    if (err) return res.send("Download failed ❌");
+  bot.sendMessage(user_id, "🌐 API Link ਰਾਹੀਂ ਡਾਊਨਲੋਡ ਸ਼ੁਰੂ ਹੋ ਗਿਆ ਹੈ... ⏳").catch(() => {});
 
-    res.download(file, () => {
-      fs.unlinkSync(file);
-    });
+  exec(cmd, async (err, stdout, stderr) => {
+    if (err) {
+      return bot.sendMessage(user_id, `API Failed ❌\nਕਾਰਨ: ${stderr.substring(0, 150)}`).catch(() => {});
+    }
+
+    try {
+      await bot.sendVideo(user_id, file, { caption: "Downloaded via API Link ✅" });
+      fs.unlinkSync(file); 
+    } catch (sendErr) {
+      bot.sendMessage(user_id, "Error ❌").catch(() => {});
+    }
   });
 });
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("ULTRA API running"));
